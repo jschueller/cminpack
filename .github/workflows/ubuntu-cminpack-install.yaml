@@ -26,8 +26,12 @@ jobs:
         run: cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=${{ matrix.BUILD_SHARED_LIBS }} -DCMAKE_BUILD_TYPE=${{ matrix.CMAKE_BUILD_TYPE }} -DCMINPACK_PRECISION=${{ matrix.CMINPACK_PRECISION }} -DUSE_BLAS=${{ matrix.USE_BLAS }} --install-prefix ${{ env.CMINPACK_INSTALL_DIR }} -S cminpack -B ${{ env.CMINPACK_BUILD_DIR }}
       - name: Build cminpack
         run: cmake --build ${{ env.CMINPACK_BUILD_DIR }} --config ${{ matrix.CMAKE_BUILD_TYPE }}
+      - name: run manual
+        run: |
+          cat cminpack/examples/ref/tlmdifc.ref
+          ${{ env.CMINPACK_BUILD_DIR }}/examples/tlmdifc
       - name: Test cminpack
-        run: ctest --test-dir ${{ env.CMINPACK_BUILD_DIR }} --build-config ${{ matrix.CMAKE_BUILD_TYPE }} --output-on-failure || diff -ur examples/ref/tlmdifc.ref ${{ env.CMINPACK_BUILD_DIR }}/examples/tlmdifc.out
+        run: ctest --test-dir ${{ env.CMINPACK_BUILD_DIR }} --build-config ${{ matrix.CMAKE_BUILD_TYPE }} --output-on-failure || diff -ur cminpack/examples/ref/tlmdifc.ref ${{ env.CMINPACK_BUILD_DIR }}/examples/tlmdifc.out
       - name: Install cminpack
         run: cmake --install ${{ env.CMINPACK_BUILD_DIR }} --config ${{ matrix.CMAKE_BUILD_TYPE }}
       - name: Delete checkout directory
